@@ -54,7 +54,7 @@ SECTOOLS_SECURITY_PROFILE ??= "${SRC_TREE}/security/securemsm/security_profiles/
 INHERIT:remove = "rm_work"
 VARIANT = "${QVARIANT}"
 SRC_DIR_ROOT = "${SRC_TREE}"
-export KDIR := "${SRC_TREE}/kernel/kernel_platform/kernel"
+export KDIR = "\${STAGING_KERNEL_DIR}"
 PATH_TO_REPO := "git://${SRC_TREE}"
 PROTO = "file"
 PATH_TO_KERNEL := "git://${SRC_TREE}/sources"
@@ -86,10 +86,23 @@ if [ -e "${SRC_TREE}/layers/meta-qti-distro/conf/bblayers.conf" ]; then
     cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
 BSPLAYERS += "\\
   ${SRC_TREE}/layers/meta-qti-distro \\
-  ${SRC_TREE}/layers/meta-qti-bsp \\
-  ${SRC_TREE}/layers/meta-qti-bsp-prop \\
   ${SRC_TREE}/layers/meta-qti-internal \\
   ${SRC_TREE}/layers/meta-qcom \\
+"
+EOF
+fi
+
+# Add automotive layers with CSE internal layers
+if [ -e "${SRC_TREE}/layers/meta-qcom-auto-distro/conf/bblayers.conf" ]; then
+    cat ${SRC_TREE}/layers/meta-qcom-auto-distro/conf/bblayers.conf > ${BUILDDIR}/conf/bblayers.conf
+fi
+
+#HY11 build don't need these layers
+if [ -d "${SRC_TREE}/layers/meta-qcom-auto-internal" ]; then
+cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
+EXTRALAYERS += "\\
+  ${SRC_TREE}/layers/meta-qcom-auto-internal \\
+  ${SRC_TREE}/layers/meta-qcom-auto-revs-internal \\
 "
 EOF
 fi
@@ -104,16 +117,13 @@ EXTRALAYERS += "\\
 EOF
 fi
 
+if [ -d "${SRC_TREE}/layers/meta-qcom-auto-revs" ]; then
 cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
 EXTRALAYERS += "\\
-  ${SRC_TREE}/layers/meta-qti-automotive-prop \\
-  ${SRC_TREE}/layers/meta-qti-automotive-distro \\
-  ${SRC_TREE}/layers/meta-qti-automotive \\
-  ${SRC_TREE}/layers/meta-qti-realtime \\
-  ${SRC_TREE}/layers/meta-qti-auto-kernel \\
-  ${SRC_TREE}/layers/meta-clang \\
+  ${SRC_TREE}/layers/meta-qcom-auto-revs \\
 "
 EOF
+fi
 
 if [ -f ${SRC_TREE}/layers/meta-qcom-hwe/classes/qprebuilt.bbclass ]; then
   #Conflict and remove qprebuilt.bbclass from meta-qcom-hwe
@@ -124,6 +134,7 @@ fi
 cat >> ${BUILDDIR}/conf/local.conf <<EOF
 USER_CLASSES ?= "buildname"
 BUILDNAME = "\${@get_tag('\${SRC_DIR_ROOT}', d)}"
+BB_SIGNATURE_HANDLER = "OEBasicHash"
 
 # Let pkgs install files that other pkgs want to install for the recovery images.
 OPKG_ARGS:append = " --force-overwrite"
