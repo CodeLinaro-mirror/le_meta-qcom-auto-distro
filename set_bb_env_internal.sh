@@ -53,7 +53,7 @@ SECTOOLS_SECURITY_PROFILE ??= "${SRC_TREE}/security/securemsm/security_profiles/
 INHERIT:remove = "rm_work"
 VARIANT = "${QVARIANT}"
 SRC_DIR_ROOT = "${SRC_TREE}"
-export KDIR := "${SRC_TREE}/kernel/kernel_platform/kernel"
+export KDIR = "\${STAGING_KERNEL_DIR}"
 PATH_TO_REPO := "git://${SRC_TREE}"
 PROTO = "file"
 PATH_TO_KERNEL := "git://${SRC_TREE}/sources"
@@ -96,23 +96,58 @@ EOF
 fi
 
 #HY11 build don't need these layers
-if [ -d "${SRC_TREE}/layers/meta-qti-automotive-internal" ]; then
+if [ -d "${SRC_TREE}/layers/meta-qcom-auto-internal" ]; then
 cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
 EXTRALAYERS += "\\
-  ${SRC_TREE}/layers/meta-qti-automotive-internal \\
+  ${SRC_TREE}/layers/meta-qcom-auto-internal \\
   ${SRC_TREE}/layers/meta-qt5 \\
 "
 EOF
 fi
 
+if [ -d "${SRC_TREE}/layers/meta-qcom-auto-revs" ]; then
+cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
+EXTRALAYERS += "\\
+  ${SRC_TREE}/layers/meta-qcom-auto-revs \\
+"
+EOF
+fi
+
+
+
+if [ -d "${SRC_TREE}/layers/meta-qcom-auto-revs-internal" ]; then
+cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
+EXTRALAYERS += "\\
+  ${SRC_TREE}/layers/meta-qcom-auto-revs-internal \\
+"
+EOF
+fi
+
+
+
+if [ -d "${SRC_TREE}/layers/meta-qti-realtime" ]; then
+cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
+EXTRALAYERS += "\\
+  ${SRC_TREE}/layers/meta-qti-realtime \\
+"
+EOF
+fi
+
+if [ -d "${SRC_TREE}/layers/meta-qcom-realtime" ]; then
+cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
+EXTRALAYERS += "\\
+  ${SRC_TREE}/layers/meta-qcom-realtime \\
+"
+EOF
+fi
+
+
 sed -i -e '/^WORKSPACE/d' -e 's/WORKSPACE/SRC_TREE/g' ${BUILDDIR}/conf/bblayers.conf
 cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
 EXTRALAYERS += "\\
-  ${SRC_TREE}/layers/meta-qti-automotive-prop \\
-  ${SRC_TREE}/layers/meta-qti-automotive-distro \\
-  ${SRC_TREE}/layers/meta-qti-automotive \\
-  ${SRC_TREE}/layers/meta-qti-realtime \\
-  ${SRC_TREE}/layers/meta-qti-auto-kernel \\
+  ${SRC_TREE}/layers/meta-qcom-auto-extras \\
+  ${SRC_TREE}/layers/meta-qcom-auto-distro \\
+  ${SRC_TREE}/layers/meta-qcom-auto \\
   ${SRC_TREE}/layers/meta-clang \\
 "
 
