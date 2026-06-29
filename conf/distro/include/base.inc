@@ -60,7 +60,7 @@ PRODUCT ??= "base"
 # Retain existing directory structure for msm or mdm distro images.
 # Append variants like '-perf', '-user' etc to deploy dir.
 DEPLOY_NAME_BASE = "${MACHINE}${@bb.utils.contains_any('DISTRO', 'msm mdm', '', '-' + d.getVar('DISTRO'), d)}"
-DEPLOY_NAME = "${DEPLOY_NAME_BASE}${@['-' + d.getVar('VARIANT', True), ''][d.getVar('VARIANT', True) == ('' or 'debug')]}"
+DEPLOY_NAME = "${DEPLOY_NAME_BASE}${@['-' + (d.getVar('VARIANT') or ''), ''][not d.getVar('VARIANT') or d.getVar('VARIANT') == 'debug']}"
 DEPLOY_DIR_IMAGE = "${DEPLOY_DIR}/images/${DEPLOY_NAME}"
 
 # Static Users for QTI
