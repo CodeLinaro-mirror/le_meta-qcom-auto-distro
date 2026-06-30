@@ -53,7 +53,7 @@ SECTOOLS_SECURITY_PROFILE ??= "${SRC_TREE}/security/securemsm/security_profiles/
 INHERIT:remove = "rm_work"
 VARIANT = "${QVARIANT}"
 SRC_DIR_ROOT = "${SRC_TREE}"
-export KDIR := "${SRC_TREE}/kernel/kernel_platform/kernel"
+export KDIR = "\${STAGING_KERNEL_DIR}"
 PATH_TO_REPO := "git://${SRC_TREE}"
 PROTO = "file"
 PATH_TO_KERNEL := "git://${SRC_TREE}/sources"
@@ -105,6 +105,14 @@ EXTRALAYERS += "\\
 EOF
 fi
 
+if [ -d "${SRC_TREE}/layers/meta-qcom-auto-internal" ]; then
+cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
+EXTRALAYERS += "\\
+  ${SRC_TREE}/layers/meta-qcom-auto-internal \\
+"
+EOF
+fi
+
 if [ -d "${SRC_TREE}/layers/meta-qti-cc" ]; then
         cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
 EXTRALAYERS += "\\
@@ -114,13 +122,22 @@ EOF
 fi
 
 sed -i -e '/^WORKSPACE/d' -e 's/WORKSPACE/SRC_TREE/g' ${BUILDDIR}/conf/bblayers.conf
+
+REALTIME_LAYER_ENTRY=""
+if [ -d "${SRC_TREE}/layers/meta-qcom-realtime" ]; then
+    REALTIME_LAYER_ENTRY="  ${SRC_TREE}/layers/meta-qcom-realtime \\"
+elif [ -d "${SRC_TREE}/layers/meta-qti-realtime" ]; then
+    REALTIME_LAYER_ENTRY="  ${SRC_TREE}/layers/meta-qti-realtime \\"
+else
+    echo "Warning: Neither meta-qcom-realtime nor meta-qti-realtime exists; skipping realtime layer."
+fi
+
 cat >> ${BUILDDIR}/conf/bblayers.conf <<EOF
 EXTRALAYERS += "\\
-  ${SRC_TREE}/layers/meta-qti-automotive-prop \\
-  ${SRC_TREE}/layers/meta-qti-automotive-distro \\
-  ${SRC_TREE}/layers/meta-qti-automotive \\
-  ${SRC_TREE}/layers/meta-qti-realtime \\
-  ${SRC_TREE}/layers/meta-qti-auto-kernel \\
+  ${SRC_TREE}/layers/meta-qcom-auto-extras \\
+  ${SRC_TREE}/layers/meta-qcom-auto-distro \\
+  ${SRC_TREE}/layers/meta-qcom-auto \\
+${REALTIME_LAYER_ENTRY}
   ${SRC_TREE}/layers/meta-clang \\
 "
 
@@ -144,9 +161,21 @@ BBFILE_PATTERN_IGNORE_EMPTY_qcom = "1"
 BBFILE_PATTERN_IGNORE_EMPTY_qcom-hwe = "1"
 BBFILE_PATTERN_IGNORE_EMPTY_qcom-distro = "1"
 
-# VARIABLE TO SUPPORT COMMON SI
-TARGET_DIR = "\${@bb.utils.contains('KERNEL_ARCH', 'gen4auto', 'gen4-5/', '', d)}"
+
+TARGET_DIR ?= ""
 
 # Let pkgs install files that other pkgs want to install for the recovery images.
 OPKG_ARGS:append = " --force-overwrite"
 EOF
+
+build-sa8775-flex-sa8797-multiconfig-image() {
+  echo "==== Function: $FUNCNAME (${FUNCNAME[@]})"
+  unset_bb_env
+  source ${WSQC}/poky/build/conf/set_bb_env.sh -t sa8797 -d auto -v debug
+  if [ "$?" != "0" ]; then
+    echo "==== Error preparing multiconfig build environment. (${FUNCNAME[@]})"
+    return 1
+  fi
+
+  cdbitbake mc:sa8775flex:machine-image mc:sa8797:machine-image
+}
