@@ -20,6 +20,9 @@ PERF_BUILD = "${@['0', '1'][d.getVar('VARIANT', True) != ('' or 'debug')]}"
 # Build optimization to disable debugging features, mainly for production images.
 USER_BUILD = "${@['0', '1'][d.getVar('VARIANT', True) == 'user']}"
 
+PERSIST_IMAGE_ROOTFS_SIZE ?= "128M"
+USERDATA_SIZE_EXT4 ?= "2000000000"
+
 # Use systemd init manager for system initialization.
 INIT_MANAGER = "systemd"
 

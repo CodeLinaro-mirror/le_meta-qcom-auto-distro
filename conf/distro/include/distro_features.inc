@@ -55,4 +55,4 @@ DISTRO_FEATURES:remove = "x11"
 DISTRO_FEATURES:append = " seccomp"
 
 # Video
-DISTRO_FEATURES:append:gen5 = " qti-gstdeinterlace"
+#DISTRO_FEATURES:append:gen5 = " qti-gstdeinterlace"
