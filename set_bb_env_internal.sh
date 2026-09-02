@@ -168,14 +168,23 @@ TARGET_DIR ?= ""
 OPKG_ARGS:append = " --force-overwrite"
 EOF
 
-build-sa8775-flex-sa8797-multiconfig-image() {
+build-sa8775-flex-gen5-multiconfig-image() {
   echo "==== Function: $FUNCNAME (${FUNCNAME[@]})"
   unset_bb_env
-  source ${WSQC}/poky/build/conf/set_bb_env.sh -t sa8797 -d auto -v debug
+  source ${WSQC}/poky/build/conf/set_bb_env.sh -t gen5 -d auto -v debug
   if [ "$?" != "0" ]; then
     echo "==== Error preparing multiconfig build environment. (${FUNCNAME[@]})"
     return 1
   fi
 
-  cdbitbake mc:sa8775flex:machine-image mc:sa8797:machine-image
+  sed -i '/^BBMULTICONFIG = "sa8775-flex gen5"$/d' ${BUILDDIR}/conf/local.conf
+  cat >> ${BUILDDIR}/conf/local.conf <<EOF
+BBMULTICONFIG = "sa8775-flex gen5"
+EOF
+
+  cdbitbake \
+    mc:sa8775-flex:machine-image-pvm \
+    mc:sa8775-flex:machine-image-lagvm \
+    mc:sa8775-flex:machine-image \
+    mc:gen5:machine-image
 }
