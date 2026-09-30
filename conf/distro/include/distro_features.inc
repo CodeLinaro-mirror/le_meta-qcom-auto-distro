@@ -9,9 +9,6 @@ DISTRO_FEATURES:append = " wayland"
 
 DISTRO_FEATURES:append = " opengl"
 
-# Use synergy, disable bluez
-DISTRO_FEATURES_BACKFILL_CONSIDERED += "bluez5 bluetooth"
-
 #Enable persist-image
 DISTRO_FEATURES:append = " persist-image "
 
@@ -52,7 +49,7 @@ DEFAULT_ENFORCING:sa7255 = "enforcing"
 DISTRO_FEATURES:remove:pn-core-image-minimal = "selinux"
 
 # Disable QCLinux Yocto Unused Distro
-DISTRO_FEATURES:remove = "x11"
+DISTRO_FEATURES:remove = "x11 nfs"
 
 # Virtiofsd
 DISTRO_FEATURES:append = " seccomp"
