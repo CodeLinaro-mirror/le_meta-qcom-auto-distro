@@ -31,8 +31,8 @@ DISTRO_FEATURES:remove:gen5 = "wifi"
 
 
 # SELinux
-#DISTRO_FEATURES:append:gen5 = " selinux"
-#DISTRO_FEATURES_NATIVE:append:gen5 = " selinux"
+DISTRO_FEATURES:append:gen5 = " selinux"
+DISTRO_FEATURES_NATIVE:append:gen5 = " selinux"
 DISTRO_FEATURES:append:sa8775 = " selinux"
 DISTRO_FEATURES_NATIVE:append:sa8775 = " selinux"
 DISTRO_FEATURES:append:sa7255 = " selinux"
@@ -41,8 +41,8 @@ DISTRO_FEATURES:append:gvm-gen4-5 = " selinux"
 DISTRO_FEATURES_NATIVE:append:gvm-gen4-5 = " selinux"
 
 # Preferred sepolicy
-#PREFERRED_PROVIDER_virtual/refpolicy:gen5 = "selinux-policy"
-#DEFAULT_ENFORCING:gen5 = "enforcing"
+PREFERRED_PROVIDER_virtual/refpolicy:gen5 = "refpolicy-targeted"
+DEFAULT_ENFORCING:gen5 = "enforcing"
 PREFERRED_PROVIDER_virtual/refpolicy:sa8775 = "selinux-policy"
 DEFAULT_ENFORCING:sa8775 = "enforcing"
 PREFERRED_PROVIDER_virtual/refpolicy:sa7255 = "selinux-policy"
