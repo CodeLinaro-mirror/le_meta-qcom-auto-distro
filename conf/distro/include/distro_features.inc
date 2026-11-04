@@ -58,5 +58,3 @@ DISTRO_FEATURES:remove = "x11 ptest nfs"
 # Virtiofsd
 DISTRO_FEATURES:append = " seccomp"
 
-# Video
-#DISTRO_FEATURES:append:gen5 = " qti-gstdeinterlace"
